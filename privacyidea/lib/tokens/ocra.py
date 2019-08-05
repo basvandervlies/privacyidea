@@ -37,7 +37,6 @@ from hashlib import sha1, sha256, sha512
 import binascii
 import struct
 
-
 SHA_FUNC = {"SHA1": sha1,
             "SHA256": sha256,
             "SHA512": sha512}

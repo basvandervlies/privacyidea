@@ -331,7 +331,6 @@ class TiqrTokenClass(OcraTokenClass):
                     token = get_one_token(serial=challenge.serial)
                     if token.type.lower() == "tiqr":
                         # We found a TiQR token with a valid challenge with the given transaction ID
-                        res = "INVALID_RESPONSE"
                         r = token.verify_response(
                             challenge=challenge.challenge, passw=passw)
                         if r > 0:
@@ -340,6 +339,14 @@ class TiqrTokenClass(OcraTokenClass):
                             challenge.set_otp_status(True)
                             # We have found a valid TiQR token transaction, we break out of the loop
                             break
+                        else:
+                            # Send back how may retries there are left for the token is blocked
+                            token.inc_failcount()
+                            fail = token.get_failcount()
+                            maxfail = token.get_max_failcount()
+                            res = "INVALID_RESPONSE:{0!s}".format(maxfail - fail)
+                            break
+
             cleanup_challenges()
 
             return "plain", res
@@ -384,6 +391,10 @@ class TiqrTokenClass(OcraTokenClass):
         # Depending on the OCRA-SUITE we create the challenge
         os = OCRASuite(ocrasuite)
         challenge = os.create_challenge()
+        if int(challenge) >= 2147483648:
+            # TIQR app has problems with value greater the 2^31
+            challenge = '1' + challenge[1:]
+            log.info("Challenge value is too big changing it to: {0!s}".format(challenge))
 
         # Create the challenge in the database
         db_challenge = Challenge(self.token.serial,
