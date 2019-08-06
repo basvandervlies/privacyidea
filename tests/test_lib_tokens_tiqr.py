@@ -529,7 +529,7 @@ class TiQRTokenTestCase(MyApiTestCase):
                         "operation": "login"}
         r = TiqrTokenClass.api_endpoint(req, g)
         self.assertEqual(r[0], "plain")
-        self.assertEqual(r[1], "INVALID_RESPONSE")
+        self.assertRegexpMatches(r[1], r"INVALID_RESPONSE:[0-9]+")
 
         # Check that the OTP status is still incorrect
         r = token.check_challenge_response(options={"transaction_id":
@@ -684,7 +684,7 @@ class TiQRTokenTestCase(MyApiTestCase):
                         "operation": "login"}
         r = TiqrTokenClass.api_endpoint(req, g)
         self.assertEqual(r[0], "plain")
-        self.assertEqual(r[1], "INVALID_RESPONSE")
+        self.assertRegexpMatches(r[1], r"INVALID_RESPONSE:[0-9]+")
 
         # Check that the OTP status is still incorrect
         r = token.check_challenge_response(options={"transaction_id":
