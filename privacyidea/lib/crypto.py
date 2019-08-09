@@ -466,9 +466,11 @@ def geturandom(length=20, hex=False):
     '''
     hsm = get_hsm()
     ret = hsm.random(length)
-        
+    
     if hex:
         ret = to_unicode(binascii.hexlify(ret))
+        # 1 bytes is 2 nibbles
+        ret = ret[:length]
     return ret
 
 # some random functions based on geturandom #################################

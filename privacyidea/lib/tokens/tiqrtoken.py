@@ -280,6 +280,7 @@ class TiqrTokenClass(OcraTokenClass):
                    "identity": identity
                    }
 
+            log.info("HvB service {0!s}".format(service))
             return "json", res
 
         elif action == API_ACTIONS.ENROLLMENT:
@@ -303,6 +304,7 @@ class TiqrTokenClass(OcraTokenClass):
             tokeninfo_session = enroll_token.get_tokeninfo("session")
             if tokeninfo_session and tokeninfo_session == session:
                 # save the secret
+                log.info("HvB secret {0!s} session {1!s}".format(secret, session))
                 enroll_token.set_otpkey(secret)
                 # delete the session
                 enroll_token.del_tokeninfo("session")
@@ -313,6 +315,7 @@ class TiqrTokenClass(OcraTokenClass):
             return "plain", res
         elif action == API_ACTIONS.AUTHENTICATION:
             res = "FAIL"
+            log.info("HvB auth parama {0!s}".format(params))
             userId = getParam(params, "userId", required)
             session = getParam(params, "sessionKey", required)
             passw = getParam(params, "response", required)
@@ -391,10 +394,12 @@ class TiqrTokenClass(OcraTokenClass):
         # Depending on the OCRA-SUITE we create the challenge
         os = OCRASuite(ocrasuite)
         challenge = os.create_challenge()
-        if int(challenge) >= 2147483648:
-            # TIQR app has problems with value greater the 2^31
-            challenge = '1' + challenge[1:]
-            log.info("Challenge value is too big changing it to: {0!s}".format(challenge))
+        log.info("HvB Challenge value is too big changing it to: {0!s}".format(challenge))
+        #if int(challenge) >= 2147483648:
+        #    # TIQR app has problems with value greater the 2^31
+        #    challenge = '1' + challenge[1:]
+        #    log.info("Challenge value is too big changing it to: {0!s}".format(challenge))
+        log.info("HvB Challenge value is too big changing it to: {0!s}".format(challenge))
 
         # Create the challenge in the database
         db_challenge = Challenge(self.token.serial,

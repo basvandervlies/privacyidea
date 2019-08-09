@@ -240,6 +240,7 @@ class OcraTokenClass(TokenClass):
         """
         ocrasuite = self.get_tokeninfo("ocrasuite")
         security_object = self.token.get_otpkey()
+        log.info("HvB ocrasuite {0!s} key".format(ocrasuite))
         ocra_object = OCRA(ocrasuite, security_object=security_object)
         # TODO: We might need to add additional Signing or Counter objects
         r = ocra_object.check_response(passw, question=challenge)

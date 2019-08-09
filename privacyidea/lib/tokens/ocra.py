@@ -37,6 +37,9 @@ from hashlib import sha1, sha256, sha512
 import binascii
 import struct
 
+import logging
+log = logging.getLogger(__name__)
+
 SHA_FUNC = {"SHA1": sha1,
             "SHA256": sha256,
             "SHA512": sha512}
@@ -269,7 +272,10 @@ class OCRA(object):
             data_input += bin_q
         elif self.ocrasuite_obj.challenge_type == "QH":
             # qustion contains hex values
+            #question = question[:10]
             bin_q = binascii.unhexlify(question)
+            #question = question[10:]
+            log.info('HvB bin_q {0!s} {1!s}'.format(bin_q, question))
             bin_q += b'\x00' * (128-len(bin_q))
             data_input += bin_q
 
@@ -314,6 +320,8 @@ class OCRA(object):
                                             pin_hash=pin_hash,
                                             counter=counter,
                                             timesteps=timesteps)
+        log.info("HvB data_input = {0!s}".format(data_input))
+        log.info("HvB data_input = {0!s}".format(binascii.hexlify(data_input)))
         r = self.hmac_obj.generate(key=self.key,
                                    challenge=binascii.hexlify(data_input))
         return r
